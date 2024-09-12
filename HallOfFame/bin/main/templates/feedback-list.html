@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Зал Славы</title>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" type="text/css" href="/css/feedbacks.css">
+</head>
+<body>
+    <header>
+        <h1>Зал Славы лучших преподавателей Академии Шаг</h1>
+    </header>
+
+    <main>
+        <div id="review-container" class="review-container">
+            <!-- отзывы будут загружаться сюда -->
+        </div>
+    </main>
+    
+    <script>
+        // функция для загрузки отзывов
+        function loadFeedbacks() {
+            fetch('/api/feedbacks') // URL для получения отзывов в формате JSON
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Сеть не ответила корректно');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Received data:', data);
+                    const container = document.getElementById('review-container');
+                    container.innerHTML = ''; // очистка контейнера перед добавлением новых отзывов
+
+                    data.forEach(feedback => {
+                        const card = document.createElement('div');
+                        card.className = 'review-card';
+
+                        card.innerHTML = `
+                            <img class="review-avatar" src="${feedback.avatarUrl}" alt="Profile Picture" />
+                            <div class="review-content">
+                                <h2 class="review-name">${feedback.nickname}</h2>
+                                <p class="review-details">характер ${feedback.gender}, стаж работы ${feedback.age} лет, город ${feedback.city}</p>
+                                <p class="review-feedback">${feedback.feedback}</p>
+                            </div>
+                        `;
+
+                        container.appendChild(card);
+                    });
+                })
+                .catch(error => console.error('Ошибка при загрузке отзывов:', error));
+        }
+
+        // загружаем отзывы каждые 2 секунды
+        setInterval(loadFeedbacks, 2000);
+        
+        // получение отзывов при первоначальной загрузке страницы
+        loadFeedbacks();
+    </script>
+</body>
+</html>

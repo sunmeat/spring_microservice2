@@ -8,46 +8,45 @@ import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+import org.springframework.amqp.support.converter.JacksonJsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration // используется для обозначения класса как источника конфигурации Spring, который определяет бины (объекты) и настройки приложения
-@EnableRabbit // Spring Boot инициализирует компоненты, необходимые для работы с RabbitMQ
+@Configuration // використовується для позначення класу як джерела бінів конфігурації Spring
+@EnableRabbit // Spring Boot ініціалізує підтримку RabbitMQ
 public class RabbitConfig {
 
-    @Bean // создаёт очередь с именем "feedbackQueue"
+    @Bean // створює чергу з назвою "feedbackQueue"
     Queue feedbackQueue() {
         return new Queue("feedbackQueue", false);
     }
 
-    @Bean // создаёт обменник с именем "feedbackExchange"
-    // обменник (или exchange) — это компонент, который принимает сообщения от отправителей и маршрутизирует их в одну или несколько очередей сообщений в зависимости от правил маршрутизации
+    @Bean // створює обмінник (exchange) типу Topic з назвою "feedbackExchange"
+    // обмінник - це компонент RabbitMQ, який отримує повідомлення від виробників і маршрутизує їх до відповідних черг на основі визначених правил маршрутизації
     TopicExchange feedbackExchange() {
         return new TopicExchange("feedbackExchange");
     }
 
-    @Bean // создаёт привязку между очередью и обменником с использованием ключа маршрутизации
+    @Bean // створює прив’язку черги до обмінника з шаблоном маршрутизації "feedback.#"
     Binding binding(Queue feedbackQueue, TopicExchange feedbackExchange) {
         return BindingBuilder.bind(feedbackQueue).to(feedbackExchange).with("feedback.#");
     }
 
-    @Bean // создаёт конвертер сообщений для преобразования объектов в JSON и обратно
+    @Bean // створює конвертер повідомлень для перетворення об'єктів Java в JSON і навпаки
     MessageConverter jackson2MessageConverter() {
-        return new Jackson2JsonMessageConverter();
+        return new JacksonJsonMessageConverter();
     }
 
-    @Bean // создаёт фабрику соединений с RabbitMQ
+    @Bean // cтворює фабрику з'єднань з RabbitMQ, вказуючи локальний сервер
     ConnectionFactory connectionFactory() {
-        CachingConnectionFactory connectionFactory = new CachingConnectionFactory("localhost");
+        var connectionFactory = new CachingConnectionFactory("localhost");
         connectionFactory.setUsername("guest");
         connectionFactory.setPassword("guest");
         return connectionFactory;
     }
 
-    @Bean // создаёт RabbitTemplate для отправки и получения сообщений
-    // это компонент в Spring AMQP, который предоставляет высокоуровневый API для взаимодействия с RabbitMQ, существенно облегчает отправку и получение сообщений в RabbitMQ
+    @Bean // створює RabbitTemplate, який використовується для відправки та отримання повідомлень з RabbitMQ
     RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
         RabbitTemplate template = new RabbitTemplate(connectionFactory);
         template.setMessageConverter(jackson2MessageConverter());

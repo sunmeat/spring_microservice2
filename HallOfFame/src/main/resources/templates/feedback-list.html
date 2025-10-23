@@ -1,35 +1,35 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Зал Славы</title>
+    <title>Зал Слави</title>
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" type="text/css" href="/css/feedbacks.css">
 </head>
 <body>
     <header>
-        <h1>Зал Славы лучших преподавателей Академии Шаг</h1>
+        <h1>Зал Слави Найкращих Викладачів ОТУШ 2025</h1>
     </header>
 
     <main>
         <div id="review-container" class="review-container">
-            <!-- отзывы будут загружаться сюда -->
+            <!-- відгуки будуть динамічно додаватися сюди за допомогою JavaScript -->
         </div>
     </main>
     
     <script>
-        // функция для загрузки отзывов
+        // функція для завантаження відгуків з сервера
         function loadFeedbacks() {
-            fetch('/api/feedbacks') // URL для получения отзывов в формате JSON
+            fetch('/api/feedbacks') // URL для отримання відгуків
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error('Сеть не ответила корректно');
+                        throw new Error('Мережа не відповіла належним чином');
                     }
                     return response.json();
                 })
                 .then(data => {
-                    console.log('Received data:', data);
+                    console.log('Отримані дані:', data);
                     const container = document.getElementById('review-container');
-                    container.innerHTML = ''; // очистка контейнера перед добавлением новых отзывов
+                    container.innerHTML = ''; // очищення контейнера перед додаванням нових відгуків
 
                     data.forEach(feedback => {
                         const card = document.createElement('div');
@@ -39,7 +39,7 @@
                             <img class="review-avatar" src="${feedback.avatarUrl}" alt="Profile Picture" />
                             <div class="review-content">
                                 <h2 class="review-name">${feedback.nickname}</h2>
-                                <p class="review-details">характер ${feedback.gender}, стаж работы ${feedback.age} лет, город ${feedback.city}</p>
+                                <p class="review-details">характер ${feedback.gender}, стаж роботи ${feedback.age} років, місто ${feedback.city}</p>
                                 <p class="review-feedback">${feedback.feedback}</p>
                             </div>
                         `;
@@ -47,13 +47,13 @@
                         container.appendChild(card);
                     });
                 })
-                .catch(error => console.error('Ошибка при загрузке отзывов:', error));
+                .catch(error => console.error('Помилка при завантаженні відгуків:', error));
         }
 
-        // загружаем отзывы каждые 2 секунды
-        setInterval(loadFeedbacks, 2000);
+        // завантаження відгуків кожні 2 секунди
+        setInterval(loadFeedbacks, 5000);
         
-        // получение отзывов при первоначальной загрузке страницы
+        // отримання відгуків при завантаженні сторінки
         loadFeedbacks();
     </script>
 </body>

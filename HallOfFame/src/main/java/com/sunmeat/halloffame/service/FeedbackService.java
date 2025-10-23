@@ -17,7 +17,7 @@ public class FeedbackService {
     private final ObjectMapper objectMapper;
 
     public FeedbackService(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper; // используется для преобразования объектов Java в JSON и обратно
+        this.objectMapper = objectMapper; // використовується для серіалізації та десеріалізації JSON
     }
 
     @RabbitListener(queues = "feedbackQueue")
@@ -26,10 +26,10 @@ public class FeedbackService {
             var jsonMessage = new String(message, StandardCharsets.UTF_8);
             FeedbackMessage feedbackMessage = objectMapper.readValue(jsonMessage, FeedbackMessage.class);
             feedbackMessage.setAvatarUrl("http://localhost:8080" + feedbackMessage.getAvatarUrl());
-            System.out.println("Распарсенное сообщение: " + feedbackMessage);
+            System.out.println("Повідомлення: " + feedbackMessage);
             feedbacks.add(feedbackMessage);
         } catch (Exception e) {
-            System.out.println("Ошибка при обработке сообщения: " + e.getMessage());
+            System.out.println("Помилка при відправці: " + e.getMessage());
             e.printStackTrace();
         }
     }

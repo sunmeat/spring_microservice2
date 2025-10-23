@@ -9,10 +9,9 @@ public class FeedbackMessage {
     private String city;
     private String feedback;
 
-    // пустой конструктор - так надо, иначе не сериализуется
+    // пустий конструктор потрібен для створення об'єктів через рефлексію, інакше виникне помилка
     public FeedbackMessage() {}
 
-    // конструктор с параметрами
     public FeedbackMessage(Long id, String nickname, String avatarUrl, String gender, int age, String city, String feedback) {
         this.id = id;
         this.nickname = nickname;
